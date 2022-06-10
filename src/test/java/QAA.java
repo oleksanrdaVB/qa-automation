@@ -28,11 +28,18 @@ public class QAA {
         movieSearch.sendKeys("Die Hard");
         searchBtn.click();
 
-            WebElement yearInfo = new WebDriverWait(driver, Duration.ofSeconds(20))
-                    .until(elementToBeClickable(By.id("result_year")));
-            System.out.println("Release " + yearInfo.getText());
-            Assert.assertEquals(yearInfo.getText().substring(5), expectedYear);
+        checkYear(driver, expectedYear);
+        checkDirector(driver, expectedDirector);
+    }
 
+    public static void checkYear(WebDriver driver, String expectedYear) {
+        WebElement yearInfo = new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(elementToBeClickable(By.id("result_year")));
+        System.out.println("Release " + yearInfo.getText());
+        Assert.assertEquals(yearInfo.getText().substring(5), expectedYear);
+    }
+
+    public static void checkDirector(WebDriver driver, String expectedDirector) {
         WebElement directorData = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(elementToBeClickable(By.id("result_director")));
         System.out.println("Name " + directorData.getText());
