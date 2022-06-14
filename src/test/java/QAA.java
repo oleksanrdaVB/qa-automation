@@ -4,6 +4,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.time.Duration;
 
@@ -19,17 +20,19 @@ public class QAA {
 
         String expectedDirector = "John McTiernan";
         String expectedYear = "1988";
+        String titleKey = "Hard";
 
         WebElement movieSearch = driver.findElement(By.id("search_bar"));
         WebElement searchBtn = driver.findElement(By.id("get_api_res_btn"));
         WebElement movieYear = driver.findElement(By.id("result_year"));
         WebElement directorName = driver.findElement(By.id("result_director"));
 
-        movieSearch.sendKeys("Die Hard");
+        movieSearch.sendKeys(titleKey);
         searchBtn.click();
 
         checkYear(driver, expectedYear);
         checkDirector(driver, expectedDirector);
+        checkResultMovieIsCorrect(driver, titleKey);
     }
 
     public static void checkYear(WebDriver driver, String expectedYear) {
@@ -45,5 +48,13 @@ public class QAA {
         System.out.println("Name " + directorData.getText());
 
         Assert.assertEquals(directorData.getText().substring(9),expectedDirector);
+    }
+
+    public static void checkResultMovieIsCorrect(WebDriver driver, String titleSubstring) {
+        WebElement titleData = new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(elementToBeClickable(By.id("result_title")));
+        System.out.println(titleData.getText());
+
+        Assert.assertEquals(titleData.getText().contains(titleSubstring), true);
     }
 }
