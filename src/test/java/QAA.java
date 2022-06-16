@@ -5,8 +5,10 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import java.util.ArrayList;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 
@@ -18,43 +20,34 @@ public class QAA {
 
         driver.get("http://localhost/index_film.html");
 
-        String expectedDirector = "John McTiernan";
-        String expectedYear = "1988";
-        String titleKey = "Hard";
-
-        WebElement movieSearch = driver.findElement(By.id("search_bar"));
         WebElement searchBtn = driver.findElement(By.id("get_api_res_btn"));
-        WebElement movieYear = driver.findElement(By.id("result_year"));
-        WebElement directorName = driver.findElement(By.id("result_director"));
 
-        movieSearch.sendKeys(titleKey);
         searchBtn.click();
 
-        checkYear(driver, expectedYear);
-        checkDirector(driver, expectedDirector);
-        checkResultMovieIsCorrect(driver, titleKey);
+        checkNegative(driver);
     }
 
-    public static void checkYear(WebDriver driver, String expectedYear) {
+    public static void checkNegative(WebDriver driver) {
         WebElement yearInfo = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(elementToBeClickable(By.id("result_year")));
-        System.out.println("Release " + yearInfo.getText());
-        Assert.assertEquals(yearInfo.getText().substring(5), expectedYear);
-    }
-
-    public static void checkDirector(WebDriver driver, String expectedDirector) {
         WebElement directorData = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(elementToBeClickable(By.id("result_director")));
-        System.out.println("Name " + directorData.getText());
-
-        Assert.assertEquals(directorData.getText().substring(9),expectedDirector);
-    }
-
-    public static void checkResultMovieIsCorrect(WebDriver driver, String titleSubstring) {
         WebElement titleData = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(elementToBeClickable(By.id("result_title")));
-        System.out.println(titleData.getText());
 
-        Assert.assertEquals(titleData.getText().contains(titleSubstring), true);
+        ArrayList<String> resultStrings = new ArrayList<String>();
+        resultStrings.add(yearInfo.getText());
+        resultStrings.add(directorData.getText());
+        resultStrings.add(titleData.getText());
+
+        AtomicBoolean isAllValuesUndefined = new AtomicBoolean(true);
+
+        resultStrings.forEach((String text) -> {
+            if (!text.equals("undefined")) {
+                isAllValuesUndefined.set(false);
+            }
+        });
+
+        Assert.assertEquals(isAllValuesUndefined.get(), true);
     }
 }
